@@ -1,14 +1,32 @@
-Maya Remote debugging with PyCharm
-===============
+### Maya Python Remote Debugging with PyCharm
 
+1. Get [PyCharm](http://www.jetbrains.com/pycharm/download). (Pro required or does free version now support Maya Debugging?)
 
-The following will illustrate how to setup the Python IDE PyCharm to debug Shotgun scripts running inside Autodesk Maya.
+1. Setup a PyCharm project to use the Maya Interpreter (File > Settings > Project Interpreter). ![](images/ProjectInterpreter.png)
 
-1. First Get PyCharm Professionnal (the version of PyCharm that supports Remote Debugging) [Download Pycharm](http://www.jetbrains.com/pycharm/download).
-2. In PyCharm, setup the Maya Interpreter as the default PyCharm Interpreter (File-> Settings -> Project Interpreter). ![](images/ProjectInterpreter.png)
-3. Setup a Remote Debugging Configuration: Run-> Edit Configurations. Add a Remote Debug Config. Set a port. Set Single instance. Uncheck both “Redirect to console Input” and  ”Suspend after connect”. ![](images/RemoteDebugConfig.png)
-4.  PyCharm, open the Python project you are trying to debug. Put a break point somewhere. Press the debug python. This will start the Debugging server. ![](images/StartRemoteDebugger.png).
-5.  Ensure your maya python path contains the path to PyCharm pydev libraries (C:\Program Files (x86)\JetBrains\PyCharm 3.4.1\helpers). Easy way to do this is to add a userSetup.py scripts in your maya config folder (C:\Users\phaneus\Documents\maya\2015-x64\scripts): ![](images/MayaPyDevSetup.png).
-6.  Start Maya and connect PyDev to the Remote debugger you have established in PyCharm. In order to do so, you can run a particular Python command. I wrapped this command in a Shelve so it is easier to call it. ![](images/MayaConnectDebugger.png)
-7. Start the script you want to debug (the script opened at step 4.). ![](images/MayaStartScript.png).
-8. And hope that your breakpoint will be hit!  ![](images/PyCharmBreakpoint.png)
+1. Add a Remote Debugging Configuration: Run > Edit Configurations
+  1. Add > Python Remote Debug
+  1. Name Configuration
+  1. Check "Single instance only" ON
+  1. Set the port (i.e 7720)
+  1. Uncheck both “Redirect to console Input” and  ”Suspend after connect”. ![](images/RemoteDebugConfig.png)
+
+1. In PyCharm add a break point somewhere and press debug. A progress indicator and "Waiting for connection" shows near the bottom and prints to debug console. ![](images/StartRemoteDebugger.png).
+
+1. Ensure PyCharm debug is on Maya's Python path, one way is with a Maya startup script:
+```python
+# <UserDocs>\maya\2016\prefs\scripts\userSetup.py
+import sys
+sys.path.append('C:\Program Files (x86)\JetBrains\PyCharm 5.0.2\debug-eggs\pycharm-debug.egg')
+```
+
+1.  Connect Maya to the PyCharm debug server using the same port from configuration. PyCharm's "waiting connection" should hide and "Connected to pydev debugger..." prints in debug console.
+```python
+# Inside Maya Python Console (Tip: add to a shelf button for quick access)
+import pydevd
+pydevd.settrace('localhost', port=7720, suspend=False)
+# To disconnect run:
+# pydevd.stoptrace()
+```
+
+1. Run the script with the breakpoint and hope it will be hit! ![](images/PyCharmBreakpoint.png)
